@@ -40,7 +40,6 @@ class TestCreateFile(unittest.TestCase):
             lines = f.readlines()
             print("DEBUG: Lines from file:", lines)  # Debug output
 
-            # Verify content with mocked timestamp
             self.assertIn("2022-02-01 14:41:10", lines[0])
             self.assertEqual(lines[1], "1 Enter content line 1\n")
             self.assertEqual(lines[2], "2 Enter content line 2\n")

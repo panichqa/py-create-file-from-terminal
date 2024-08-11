@@ -3,20 +3,34 @@ import os
 from datetime import datetime
 
 
-def create_directory(path_list: list) -> str:
+def parse_args() -> str:
+    args = sys.argv[1:]
+    if "-d" in args:
+        d_index = args.index("-d")
+        dir_path = args[d_index + 1:]
+    else:
+        dir_path = []
+
+    if "-f" in args:
+        f_index = args.index("-f")
+        file_name = args[f_index + 1]
+    else:
+        file_name = None
+
+    return dir_path, file_name
+
+
+def create_directory(path_list: list[str]) -> str:
     directory_path = os.path.join(*path_list)
     os.makedirs(directory_path, exist_ok=True)
-    print(f"Directory \"{directory_path}\" created or already exists.")
+    print(f'Directory "{directory_path}" created or already exists.')
     return directory_path
 
 
 def create_file(file_path: str) -> None:
     with open(file_path, "a") as file:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Write the current timestamp at the top of the file
-        file.write(f"{current_time}\n")
-
+        file.write(f"\n{current_time}\n")
         line_count = 1
         while True:
             line = input(f"Enter content line {line_count}: ")
@@ -24,7 +38,7 @@ def create_file(file_path: str) -> None:
                 break
             file.write(f"{line_count} {line}\n")
             line_count += 1
-    print(f"Content written to file \"{file_path}\".")
+    print(f'Content written to file "{file_path}".')
 
 
 def main() -> None:
