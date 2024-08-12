@@ -5,17 +5,19 @@ from datetime import datetime
 
 def parse_args() -> str:
     args = sys.argv[1:]
+    dir_path = []
+    file_name = None
+
     if "-d" in args:
         d_index = args.index("-d")
         dir_path = args[d_index + 1:]
-    else:
-        dir_path = []
+        if "-f" in dir_path:
+            dir_path = dir_path[:dir_path.index("-f")]
 
     if "-f" in args:
         f_index = args.index("-f")
-        file_name = args[f_index + 1]
-    else:
-        file_name = None
+        if f_index + 1 < len(args):
+            file_name = args[f_index + 1]
 
     return dir_path, file_name
 
@@ -42,28 +44,15 @@ def create_file(file_path: str) -> None:
 
 
 def main() -> None:
-    args = sys.argv[1:]
-    if "-d" in args:
-        d_index = args.index("-d")
-        path_list = []
-        for i in range(d_index + 1, len(args)):
-            if args[i] == "-f":
-                break
-            path_list.append(args[i])
+    dir_path, file_name = parse_args()
 
-        directory_path = create_directory(path_list)
-
-        if "-f" in args:
-            f_index = args.index("-f")
-            if f_index + 1 < len(args):
-                file_name = args[f_index + 1]
-                file_path = os.path.join(directory_path, file_name)
-                create_file(file_path)
-    elif "-f" in args:
-        f_index = args.index("-f")
-        if f_index + 1 < len(args):
-            file_name = args[f_index + 1]
-            create_file(file_name)
+    if dir_path:
+        directory_path = create_directory(dir_path)
+        if file_name:
+            file_path = os.path.join(directory_path, file_name)
+            create_file(file_path)
+    elif file_name:
+        create_file(file_name)
     else:
         raise ValueError(
             "Invalid arguments."
