@@ -1,25 +1,13 @@
-import sys
 import os
 from datetime import datetime
+import argparse
 
 
-def parse_args() -> tuple[list[str], str]:
-    args = sys.argv[1:]
-    dir_path = []
-    file_name = None
-
-    if "-d" in args:
-        d_index = args.index("-d")
-        dir_path = args[d_index + 1:]
-        if "-f" in dir_path:
-            dir_path = dir_path[:dir_path.index("-f")]
-
-    if "-f" in args:
-        f_index = args.index("-f")
-        if f_index + 1 < len(args):
-            file_name = args[f_index + 1]
-
-    return dir_path, file_name
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Create a directory and/or file with user input.")
+    parser.add_argument('-d', '--directory', nargs='+', help='Specify the directory path.', default=[])
+    parser.add_argument('-f', '--file', help='Specify the file name.')
+    return parser.parse_args()
 
 
 def create_directory(path_list: list[str]) -> str:
@@ -50,17 +38,17 @@ def create_file(file_path: str, content: list[str]) -> None:
 
 
 def main() -> None:
-    dir_path, file_name = parse_args()
+    args = parse_args()
 
-    if dir_path:
-        directory_path = create_directory(dir_path)
-        if file_name:
-            file_path = os.path.join(directory_path, file_name)
+    if args.directory:
+        directory_path = create_directory(args.directory)
+        if args.file:
+            file_path = os.path.join(directory_path, args.file)
             content = collect_user_input()
             create_file(file_path, content)
-    elif file_name:
+    elif args.file:
         content = collect_user_input()
-        create_file(file_name, content)
+        create_file(args.file, content)
     else:
         raise ValueError(
             "Invalid arguments."
