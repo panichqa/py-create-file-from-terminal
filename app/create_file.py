@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 
-def parse_args() -> str:
+def parse_args() -> tuple[list[str], str]:
     args = sys.argv[1:]
     dir_path = []
     file_name = None
@@ -25,22 +25,28 @@ def parse_args() -> str:
 def create_directory(path_list: list[str]) -> str:
     directory_path = os.path.join(*path_list)
     os.makedirs(directory_path, exist_ok=True)
-    print(f'Directory "{directory_path}" created or already exists.')
     return directory_path
 
 
-def create_file(file_path: str) -> None:
+def collect_user_input() -> list[str]:
+    lines = []
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    lines.append(f"\n{current_time}\n")
+
+    line_count = 1
+    while True:
+        line = input("Enter content line (type 'stop' to finish): ")
+        if line.lower() == "stop":
+            break
+        lines.append(f"{line_count} {line}\n")
+        line_count += 1
+
+    return lines
+
+
+def create_file(file_path: str, content: list[str]) -> None:
     with open(file_path, "a") as file:
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        file.write(f"\n{current_time}\n")
-        line_count = 1
-        while True:
-            line = input(f"Enter content line {line_count}: ")
-            if line.lower() == "stop":
-                break
-            file.write(f"{line_count} {line}\n")
-            line_count += 1
-    print(f'Content written to file "{file_path}".')
+        file.writelines(content)
 
 
 def main() -> None:
@@ -50,9 +56,11 @@ def main() -> None:
         directory_path = create_directory(dir_path)
         if file_name:
             file_path = os.path.join(directory_path, file_name)
-            create_file(file_path)
+            content = collect_user_input()
+            create_file(file_path, content)
     elif file_name:
-        create_file(file_name)
+        content = collect_user_input()
+        create_file(file_name, content)
     else:
         raise ValueError(
             "Invalid arguments."
